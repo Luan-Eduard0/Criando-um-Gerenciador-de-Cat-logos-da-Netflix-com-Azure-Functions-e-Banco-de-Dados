@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "FnPostDatabase": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 8080",
+      "launchBrowser": false
+    }
+  }
+}
