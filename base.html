@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Gallery</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Movie Gallery</h1>
+    <div class="card-container" id="card-container">
+    </div>
+
+    <div class="modal" id="video-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <video id="video-player" controls></video>
+        </div>
+    </div>
+
+    <script>
+        async function fetchMovies() {
+            const cardContainer = document.getElementById('card-container');
+            const modal = document.getElementById('video-modal');
+            const videoPlayer = document.getElementById('video-player');
+            const modalClose = document.getElementById('modal-close');
+
+            const apiGetAllMovies = "http://localhost:8080/api/getAllMovies";
+
+            try {
+                // Buscar lista de filmes
+                const response = await fetch(apiGetAllMovies);
+                const movies = await response.json();
+                if(!movies || movies.length === 0) {
+                    throw new Error("Nenhum filme encontrado");
+                }
+                if(response.status !== 200 || !movies) {
+                    throw new Error("Erro ao buscar os dados");
+                }
+                movies.forEach(movie => {
+                    const card = document.createElement('div');
+                    card.classList.add('card');
+                    card.innerHTML = `
+                        <img src="${movie.thumbnail}" alt="${movie.title}">
+                        <h2>${movie.title}</h2>
+                        <button data-video="${movie.video}">Assistir</button>
+                    `;
+                    cardContainer.appendChild(card);
+                });
+
+                cardContainer.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') {
+                        const videoUrl = e.target.getAttribute('data-video');
+                        videoPlayer.src = videoUrl;
+                        modal.classList.add('active');
+                    }
+                });
+
+                modalClose.addEventListener('click', () => {
+                    modal.classList.remove('active');
+                    videoPlayer.pause();
+                    videoPlayer.src = '';
+                });
+            } catch (error) {
+                console.error("Erro ao buscar os dados:", error);
+                form.showErrorMessage("Erro ao buscar os dados");
+            }
+        }
+
+        fetchMovies();
+    </script>
+</body>
+</html>
